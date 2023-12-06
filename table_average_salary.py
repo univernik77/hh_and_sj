@@ -63,7 +63,6 @@ def predict_rub_salary_for_hh(vacancy):
 
 
 def fetch_salaries_hh(languages):
-    dict_languages = {}
     headers = {
         'User-Agent': 'hh.py (mandarina776@gmail.com)'
     }
@@ -95,18 +94,15 @@ def fetch_salaries_hh(languages):
                 if predict_rub_salary_for_hh(vacancy):
                     salary.append(predict_rub_salary_for_hh(vacancy))
 
-        dict_languages = make_dict(
-            languages,
-            language,
-            salary,
-            all_pages[0]['found']
-        )
+        average = int(sum(salary) / len(salary)) if len(salary) else 0
+        languages[language]['vacancies_found'] = all_pages[0]['found']
+        languages[language]['vacancies_processed'] = len(salary)
+        languages[language]['average_salary'] = average
 
-    return dict_languages
+    return languages
 
 
 def fetch_salaries_superjob(languages):
-    dict_languages = {}
     headers = {
         'X-Api-App-Id': 'v3.r.137979758.a1aa693d4024c996d8e001a7af7b'
                         '24662748bae2.220d6b91874162cb06ea8c028cb68deb7094b1d6'
@@ -140,14 +136,12 @@ def fetch_salaries_superjob(languages):
                 if predict_rub_salary_for_superjob(vacancy):
                     salary.append(predict_rub_salary_for_superjob(vacancy))
 
-        dict_languages = make_dict(
-            languages,
-            language,
-            salary,
-            page_payload.get('total')
-        )
+        average = int(sum(salary) / len(salary)) if len(salary) else 0
+        languages[language]['vacancies_found'] = page_payload.get('total')
+        languages[language]['vacancies_processed'] = len(salary)
+        languages[language]['average_salary'] = average
 
-    return dict_languages
+    return languages
 
 
 def main():
