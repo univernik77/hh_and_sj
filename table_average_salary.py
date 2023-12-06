@@ -1,5 +1,6 @@
 import time
 
+from environs import Env
 from terminaltables import AsciiTable
 import requests
 
@@ -48,9 +49,9 @@ def predict_rub_salary_for_hh(vacancy):
     return predict_salary(salary.get('from'), salary.get('to'))
 
 
-def fetch_salaries_hh(languages):
+def fetch_vacancies_hh(user_agent, languages):
     headers = {
-        'User-Agent': 'hh.py (mandarina776@gmail.com)'
+        'User-Agent': user_agent
     }
     for language in languages:
         all_pages = []
@@ -89,10 +90,9 @@ def fetch_salaries_hh(languages):
     return languages
 
 
-def fetch_salaries_superjob(languages):
+def fetch_vacancies_superjob(key, languages):
     headers = {
-        'X-Api-App-Id': 'v3.r.137979758.a1aa693d4024c996d8e001a7af7b'
-                        '24662748bae2.220d6b91874162cb06ea8c028cb68deb7094b1d6'
+        'X-Api-App-Id': key
     }
     for language in languages:
         all_pages = []
@@ -134,10 +134,18 @@ def fetch_salaries_superjob(languages):
 
 
 def main():
+    env = Env()
+    env.read_env()
     title_hh = 'HeadHunter Moscow'
     title_sj = 'SuperJob Moscow'
-    table_hh = create_table(fetch_salaries_hh(LANGUAGES), title_hh)
-    table_sj = create_table(fetch_salaries_superjob(LANGUAGES), title_sj)
+    table_hh = create_table(
+        fetch_vacancies_hh(env('HH_USER_AGENT'), LANGUAGES),
+        title_hh
+    )
+    table_sj = create_table(
+        fetch_vacancies_superjob(env('SJ_API_KEY'), LANGUAGES),
+        title_sj
+    )
     print(table_hh)
     print(table_sj)
 
