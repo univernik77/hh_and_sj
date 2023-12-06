@@ -3,24 +3,9 @@ import time
 from terminaltables import AsciiTable
 import requests
 
-LANGUAGES = {'Java': {}, 'Python': {}, 'PHP': {},
-             '1С': {}, 'C++': {}, 'Ruby': {}, 'Swift': {},
-             'Go': {}, 'Javascript': {}, 'Kotlin': {}}
-
-
-def get_response(url, headers, params):
-    response = requests.get(url, headers=headers, params=params)
-    response.raise_for_status()
-    return response
-
-
-def make_dict(languages, language, salary, total):
-    average = int(sum(salary) / len(salary)) if len(salary) else 0
-    languages[language]['vacancies_found'] = total
-    languages[language]['vacancies_processed'] = len(salary)
-    languages[language]['average_salary'] = average
-    return languages
-
+LANGUAGES = ['Java', 'Python', 'PHP',
+             '1С', 'C++', 'Ruby', 'Swift',
+             'Go', 'Javascript', 'Kotlin']
 
 def create_table(languages, title):
     salaries_data = [
@@ -78,11 +63,9 @@ def fetch_salaries_hh(languages):
                        'currency': 'RUR',
                        'period': 30,
                        'area': 1}
-            page_payload = get_response(
-                'https://api.hh.ru/vacancies',
-                headers,
-                payload
-            ).json()
+            response = requests.get(url, headers=headers, params=payload)
+            response.raise_for_status()
+            page_payload = response.json()
             pages_number = page_payload.get('pages')
             all_pages.append(page_payload)
             page += 1
@@ -118,11 +101,9 @@ def fetch_salaries_superjob(languages):
                        't': 4,
                        'key': 48
                        }
-            page_payload = get_response(
-                'https://api.superjob.ru/2.0/vacancies/',
-                headers,
-                payload
-            ).json()
+            response = requests.get(url, headers=headers, params=payload)
+            response.raise_for_status()
+            page_payload = response.json()
             all_pages.append(page_payload)
             page += 1
             if not page_payload.get('more'):
