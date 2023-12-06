@@ -24,19 +24,19 @@ def make_dict(languages, language, salary, total):
 
 
 def create_table(thesauruses, title):
-    table_data = [
+    salaries_table = [
         ['Язык программирования',
          'Вакансий найдено',
          'Вакансий обработано',
          'Средняя зарплата']
     ]
     for key, thesaurus in thesauruses.items():
-        table_data.append([key,
+        salaries_table.append([key,
                            thesaurus["vacancies_found"],
                            thesaurus["vacancies_processed"],
                            thesaurus["average_salary"],
                            ])
-    table = AsciiTable(table_data, title)
+    table = AsciiTable(salaries_table, title)
     return table.table
 
 
