@@ -3,7 +3,6 @@ import time
 from terminaltables import AsciiTable
 import requests
 
-
 LANGUAGES = {'Java': {}, 'Python': {}, 'PHP': {},
              '1С': {}, 'C++': {}, 'Ruby': {}, 'Swift': {},
              'Go': {}, 'Javascript': {}, 'Kotlin': {}}
@@ -24,19 +23,19 @@ def make_dict(languages, language, salary, total):
 
 
 def create_table(languages, title):
-    salaries_table = [
+    salaries_data = [
         ['Язык программирования',
          'Вакансий найдено',
          'Вакансий обработано',
          'Средняя зарплата']
     ]
     for key, language in languages.items():
-        salaries_table.append([key,
-                           language["vacancies_found"],
-                           language["vacancies_processed"],
-                           language["average_salary"],
-                           ])
-    table = AsciiTable(salaries_table, title)
+        salaries_data.append([key,
+                              language["vacancies_found"],
+                              language["vacancies_processed"],
+                              language["average_salary"],
+                              ])
+    table = AsciiTable(salaries_data, title)
     return table.table
 
 
@@ -63,7 +62,7 @@ def predict_rub_salary_for_hh(vacancy):
     return predict_salary(salary.get('from'), salary.get('to'))
 
 
-def fetch_hh(languages):
+def fetch_salaries_hh(languages):
     dict_languages = {}
     headers = {
         'User-Agent': 'hh.py (mandarina776@gmail.com)'
@@ -106,7 +105,7 @@ def fetch_hh(languages):
     return dict_languages
 
 
-def fetch_superjob(languages):
+def fetch_salaries_superjob(languages):
     dict_languages = {}
     headers = {
         'X-Api-App-Id': 'v3.r.137979758.a1aa693d4024c996d8e001a7af7b'
@@ -154,8 +153,8 @@ def fetch_superjob(languages):
 def main():
     title_hh = 'HeadHunter Moscow'
     title_sj = 'SuperJob Moscow'
-    table_hh = create_table(fetch_hh(LANGUAGES), title_hh)
-    table_sj = create_table(fetch_superjob(LANGUAGES), title_sj)
+    table_hh = create_table(fetch_salaries_hh(LANGUAGES), title_hh)
+    table_sj = create_table(fetch_salaries_superjob(LANGUAGES), title_sj)
     print(table_hh)
     print(table_sj)
 
