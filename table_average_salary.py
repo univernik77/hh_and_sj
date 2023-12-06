@@ -68,7 +68,7 @@ def fetch_salaries_hh(languages):
     }
     for language in languages:
         all_pages = []
-        salary = []
+        salaries = []
         page = 0
         pages_number = 2
         while page < pages_number:
@@ -92,11 +92,11 @@ def fetch_salaries_hh(languages):
         for payload in all_pages:
             for vacancy in payload.get('items'):
                 if predict_rub_salary_for_hh(vacancy):
-                    salary.append(predict_rub_salary_for_hh(vacancy))
+                    salaries.append(predict_rub_salary_for_hh(vacancy))
 
-        average = int(sum(salary) / len(salary)) if len(salary) else 0
+        average = int(sum(salaries) / len(salaries)) if len(salaries) else 0
         languages[language]['vacancies_found'] = all_pages[0]['found']
-        languages[language]['vacancies_processed'] = len(salary)
+        languages[language]['vacancies_processed'] = len(salaries)
         languages[language]['average_salary'] = average
 
     return languages
@@ -109,7 +109,7 @@ def fetch_salaries_superjob(languages):
     }
     for language in languages:
         all_pages = []
-        salary = []
+        salaries = []
         page = 0
         while True:
             payload = {'keyword': f'программист {language}',
@@ -134,11 +134,11 @@ def fetch_salaries_superjob(languages):
             all_vacancies = pay.get('objects')
             for vacancy in all_vacancies:
                 if predict_rub_salary_for_superjob(vacancy):
-                    salary.append(predict_rub_salary_for_superjob(vacancy))
+                    salaries.append(predict_rub_salary_for_superjob(vacancy))
 
-        average = int(sum(salary) / len(salary)) if len(salary) else 0
+        average = int(sum(salaries) / len(salaries)) if len(salaries) else 0
         languages[language]['vacancies_found'] = page_payload.get('total')
-        languages[language]['vacancies_processed'] = len(salary)
+        languages[language]['vacancies_processed'] = len(salaries)
         languages[language]['average_salary'] = average
 
     return languages
