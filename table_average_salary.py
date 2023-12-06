@@ -7,6 +7,7 @@ LANGUAGES = ['Java', 'Python', 'PHP',
              '1С', 'C++', 'Ruby', 'Swift',
              'Go', 'Javascript', 'Kotlin']
 
+
 def create_table(languages, title):
     salaries_data = [
         ['Язык программирования',
@@ -56,13 +57,16 @@ def fetch_salaries_hh(languages):
         salaries = []
         page = 0
         pages_number = 2
+        days = 30
+        area = 1
+        seconds = 10
         while page < pages_number:
             payload = {'page': page,
                        'text': f'программист {language}',
                        'search_fields': 'name',
                        'currency': 'RUR',
-                       'period': 30,
-                       'area': 1}
+                       'period': days,
+                       'area': area}
             response = requests.get(url, headers=headers, params=payload)
             response.raise_for_status()
             page_payload = response.json()
@@ -70,7 +74,7 @@ def fetch_salaries_hh(languages):
             all_pages.append(page_payload)
             page += 1
 
-        time.sleep(10)
+        time.sleep(seconds)
 
         for payload in all_pages:
             for vacancy in payload.get('items'):
@@ -94,12 +98,16 @@ def fetch_salaries_superjob(languages):
         all_pages = []
         salaries = []
         page = 0
+        count = 1
+        area = 4
+        seconds = 10
+        directory = 48
         while True:
             payload = {'keyword': f'программист {language}',
                        'page': page,
-                       'count': 1,
-                       't': 4,
-                       'key': 48
+                       'count': count,
+                       't': area,
+                       'key': directory
                        }
             response = requests.get(url, headers=headers, params=payload)
             response.raise_for_status()
@@ -109,7 +117,7 @@ def fetch_salaries_superjob(languages):
             if not page_payload.get('more'):
                 break
 
-        time.sleep(10)
+        time.sleep(seconds)
 
         for pay in all_pages:
             all_vacancies = pay.get('objects')
