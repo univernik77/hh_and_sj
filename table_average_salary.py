@@ -10,19 +10,19 @@ LANGUAGES = ['Java', 'Python', 'PHP',
 
 
 def create_table(languages, title):
-    salaries_data = [
+    salaries = [
         ['Язык программирования',
          'Вакансий найдено',
          'Вакансий обработано',
          'Средняя зарплата']
     ]
     for key, language in languages.items():
-        salaries_data.append([key,
-                              language["vacancies_found"],
-                              language["vacancies_processed"],
-                              language["average_salary"],
-                              ])
-    table = AsciiTable(salaries_data, title)
+        salaries.append([key,
+                         language["vacancies_found"],
+                         language["vacancies_processed"],
+                         language["average_salary"],
+                         ])
+    table = AsciiTable(salaries, title)
     return table.table
 
 
@@ -50,6 +50,7 @@ def predict_rub_salary_for_hh(vacancy):
 
 
 def fetch_vacancies_hh(user_agent, languages):
+    salary_per_languages = {}
     headers = {
         'User-Agent': user_agent
     }
@@ -57,18 +58,22 @@ def fetch_vacancies_hh(user_agent, languages):
         all_pages = []
         salaries = []
         page = 0
-        pages_number = 2
+        pages_number = 1
         days = 30
         area = 1
-        seconds = 10
+        seconds = 1
         while page < pages_number:
             payload = {'page': page,
                        'text': f'программист {language}',
                        'search_fields': 'name',
                        'currency': 'RUR',
                        'period': days,
-                       'area': area}
-            response = requests.get(url, headers=headers, params=payload)
+                       'area': area
+                       }
+            response = requests.get('https://api.hh.ru/vacancies',
+                                    headers=headers,
+                                    params=payload
+                                    )
             response.raise_for_status()
             page_payload = response.json()
             pages_number = page_payload.get('pages')
@@ -79,18 +84,19 @@ def fetch_vacancies_hh(user_agent, languages):
 
         for payload in all_pages:
             for vacancy in payload.get('items'):
-                if predict_rub_salary_for_hh(vacancy):
-                    salaries.append(predict_rub_salary_for_hh(vacancy))
+                salary = predict_rub_salary_for_hh(vacancy)
+                if salary:
+                    salaries.append(salary)
 
         average = int(sum(salaries) / len(salaries)) if len(salaries) else 0
-        languages[language]['vacancies_found'] = all_pages[0]['found']
-        languages[language]['vacancies_processed'] = len(salaries)
-        languages[language]['average_salary'] = average
-
-    return languages
+        salary_per_languages[language] = ({'vacancies_found': all_pages[0]['found']})
+        salary_per_languages[language].update({'vacancies_processed': len(salaries)})
+        salary_per_languages[language].update({'average_salary': average})
+    return salary_per_languages
 
 
 def fetch_vacancies_superjob(key, languages):
+    salary_per_languages = {}
     headers = {
         'X-Api-App-Id': key
     }
@@ -100,7 +106,7 @@ def fetch_vacancies_superjob(key, languages):
         page = 0
         count = 1
         area = 4
-        seconds = 10
+        seconds = 1
         directory = 48
         while True:
             payload = {'keyword': f'программист {language}',
@@ -109,7 +115,10 @@ def fetch_vacancies_superjob(key, languages):
                        't': area,
                        'key': directory
                        }
-            response = requests.get(url, headers=headers, params=payload)
+            response = requests.get('https://api.superjob.ru/2.0/vacancies/',
+                                    headers=headers,
+                                    params=payload
+                                    )
             response.raise_for_status()
             page_payload = response.json()
             all_pages.append(page_payload)
@@ -122,15 +131,15 @@ def fetch_vacancies_superjob(key, languages):
         for pay in all_pages:
             all_vacancies = pay.get('objects')
             for vacancy in all_vacancies:
-                if predict_rub_salary_for_superjob(vacancy):
-                    salaries.append(predict_rub_salary_for_superjob(vacancy))
+                salary = predict_rub_salary_for_superjob(vacancy)
+                if salary:
+                    salaries.append(salary)
 
         average = int(sum(salaries) / len(salaries)) if len(salaries) else 0
-        languages[language]['vacancies_found'] = page_payload.get('total')
-        languages[language]['vacancies_processed'] = len(salaries)
-        languages[language]['average_salary'] = average
-
-    return languages
+        salary_per_languages[language] = {'vacancies_found': page_payload.get('total')}
+        salary_per_languages[language].update({'vacancies_processed': len(salaries)})
+        salary_per_languages[language].update({'average_salary': average})
+    return salary_per_languages
 
 
 def main():
