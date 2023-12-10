@@ -93,9 +93,11 @@ def fetch_statistics_hh(user_agent, languages):
                     salaries.append(salary)
 
         average = int(sum(salaries) / len(salaries)) if len(salaries) else 0
-        salary_per_languages[language] = ({'vacancies_found': all_pages[0]['found']})
-        salary_per_languages[language].update({'vacancies_processed': len(salaries)})
-        salary_per_languages[language].update({'average_salary': average})
+        salary_per_languages[language] = {
+            'vacancies_found': all_pages[0]['found'],
+            'vacancies_processed': len(salaries),
+            'average_salary': average
+        }
     return salary_per_languages
 
 
@@ -142,9 +144,11 @@ def fetch_statistics_superjob(key, languages):
                     salaries.append(salary)
 
         average = int(sum(salaries) / len(salaries)) if len(salaries) else 0
-        salary_per_languages[language] = {'vacancies_found': page_payload.get('total')}
-        salary_per_languages[language].update({'vacancies_processed': len(salaries)})
-        salary_per_languages[language].update({'average_salary': average})
+        salary_per_languages[language] = {
+            'vacancies_found': page_payload.get('total'),
+            'vacancies_processed': len(salaries),
+            'average_salary': average
+        }
     return salary_per_languages
 
 
