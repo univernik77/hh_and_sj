@@ -86,8 +86,8 @@ def fetch_statistics_hh(user_agent, languages):
 
         time.sleep(seconds)
 
-        for payload in all_pages:
-            for vacancy in payload.get('items'):
+        for one_page in all_pages:
+            for vacancy in one_page.get('items'):
                 salary = predict_rub_salary_for_hh(vacancy)
                 if salary:
                     salaries.append(salary)
