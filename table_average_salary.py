@@ -49,7 +49,7 @@ def predict_rub_salary_for_hh(vacancy):
     return predict_salary(salary.get('from'), salary.get('to'))
 
 
-def fetch_vacancies_hh(user_agent, languages):
+def fetch_statistics_hh(user_agent, languages):
     salary_per_languages = {}
     headers = {
         'User-Agent': user_agent
@@ -95,7 +95,7 @@ def fetch_vacancies_hh(user_agent, languages):
     return salary_per_languages
 
 
-def fetch_vacancies_superjob(key, languages):
+def fetch_statistics_superjob(key, languages):
     salary_per_languages = {}
     headers = {
         'X-Api-App-Id': key
@@ -148,11 +148,11 @@ def main():
     title_hh = 'HeadHunter Moscow'
     title_sj = 'SuperJob Moscow'
     table_hh = create_table(
-        fetch_vacancies_hh(env('HH_USER_AGENT'), LANGUAGES),
+        fetch_statistics_hh(env('HH_USER_AGENT'), LANGUAGES),
         title_hh
     )
     table_sj = create_table(
-        fetch_vacancies_superjob(env('SJ_API_KEY'), LANGUAGES),
+        fetch_statistics_superjob(env('SJ_API_KEY'), LANGUAGES),
         title_sj
     )
     print(table_hh)
