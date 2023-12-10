@@ -4,9 +4,10 @@ from environs import Env
 from terminaltables import AsciiTable
 import requests
 
-LANGUAGES = ['Java', 'Python', 'PHP',
-             '1С', 'C++', 'Ruby', 'Swift',
-             'Go', 'Javascript', 'Kotlin']
+LANGUAGES = [
+    'Java', 'Python', 'PHP', '1С', 'C++', 'Ruby',
+    'Swift', 'Go', 'Javascript', 'Kotlin'
+]
 
 
 def create_table(languages, title):
@@ -17,11 +18,12 @@ def create_table(languages, title):
          'Средняя зарплата']
     ]
     for key, language in languages.items():
-        salaries.append([key,
-                         language["vacancies_found"],
-                         language["vacancies_processed"],
-                         language["average_salary"],
-                         ])
+        salaries.append(
+            [key,
+            language["vacancies_found"],
+            language["vacancies_processed"],
+            language["average_salary"],
+        ])
     table = AsciiTable(salaries, title)
     return table.table
 
@@ -63,17 +65,19 @@ def fetch_statistics_hh(user_agent, languages):
         area = 1
         seconds = 1
         while page < pages_number:
-            payload = {'page': page,
-                       'text': f'программист {language}',
-                       'search_fields': 'name',
-                       'currency': 'RUR',
-                       'period': days,
-                       'area': area
-                       }
-            response = requests.get('https://api.hh.ru/vacancies',
-                                    headers=headers,
-                                    params=payload
-                                    )
+            payload = {
+                'page': page,
+                'text': f'программист {language}',
+                'search_fields': 'name',
+                'currency': 'RUR',
+                'period': days,
+                'area': area
+            }
+            response = requests.get(
+                'https://api.hh.ru/vacancies',
+                headers=headers,
+                params=payload
+            )
             response.raise_for_status()
             page_payload = response.json()
             pages_number = page_payload.get('pages')
@@ -109,16 +113,18 @@ def fetch_statistics_superjob(key, languages):
         seconds = 1
         directory = 48
         while True:
-            payload = {'keyword': f'программист {language}',
-                       'page': page,
-                       'count': count,
-                       't': area,
-                       'key': directory
-                       }
-            response = requests.get('https://api.superjob.ru/2.0/vacancies/',
-                                    headers=headers,
-                                    params=payload
-                                    )
+            payload = {
+                'keyword': f'программист {language}',
+                'page': page,
+                'count': count,
+                't': area,
+                'key': directory
+            }
+            response = requests.get(
+                'https://api.superjob.ru/2.0/vacancies/',
+                headers=headers,
+                params=payload
+            )
             response.raise_for_status()
             page_payload = response.json()
             all_pages.append(page_payload)
