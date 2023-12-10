@@ -17,12 +17,12 @@ def create_table(languages, title):
          'Вакансий обработано',
          'Средняя зарплата']
     ]
-    for key, language in languages.items():
+    for language, language_statistic in languages.items():
         salaries.append(
-            [key,
-            language["vacancies_found"],
-            language["vacancies_processed"],
-            language["average_salary"],
+            [language,
+            language_statistic["vacancies_found"],
+            language_statistic["vacancies_processed"],
+            language_statistic["average_salary"],
         ])
     table = AsciiTable(salaries, title)
     return table.table
@@ -136,8 +136,8 @@ def fetch_statistics_superjob(key, languages):
 
         time.sleep(seconds)
 
-        for pay in all_pages:
-            all_vacancies = pay.get('objects')
+        for one_page in all_pages:
+            all_vacancies = one_page.get('objects')
             for vacancy in all_vacancies:
                 salary = predict_rub_salary_for_superjob(vacancy)
                 if salary:
